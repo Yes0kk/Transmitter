@@ -2,7 +2,7 @@
 
 #include "common.h"
 
-
+/* RCC Base Address */
 #define RCC_BASE (AHB_BASE + 0x0000A000UL)
 
 
@@ -27,4 +27,4 @@ typedef struct RCC_TypeDef
 
 
 // Reset and Clock Control
-#define RCC ((RCC_TypeDef *) RCC_BASE)
+#define RCC 	((RCC_TypeDef *) RCC_BASE)

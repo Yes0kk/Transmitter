@@ -2,11 +2,6 @@
 // TODO: APB1 PERIPHERALS
 // ========================
 
-// Timers
-// TODO: TIM9
-// TODO: TIM8
-// TODO: TIM1
-
 // GPIO Ports
 // TODO: GPIOG
 // TODO: GPIOF
@@ -20,9 +15,6 @@
 // TODO: ADC3
 // TODO: ADC2
 // TODO: ADC1
-
-// USART
-// TODO: USART1
 
 // SPI
 // TODO: SPI1
@@ -38,17 +30,6 @@
 // TODO: APB2 PERIPHERALS
 // ========================
 
-// Timers
-// TODO: TIM14
-// TODO: TIM13
-// TODO: TIM12
-// TODO: TIM7
-// TODO: TIM6
-// TODO: TIM5
-// TODO: TIM4
-// TODO: TIM3
-// TODO: TIM2
-
 // Watchdog
 // TODO: IWDG
 // TODO: WWDG
@@ -59,12 +40,6 @@
 // SPI
 // TODO: SPI3
 // TODO: SPI2
-
-// USART
-// TODO: UART5
-// TODO: UART4
-// TODO: USART3
-// TODO: USART2
 
 // I2C
 // TODO: I2C1

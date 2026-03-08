@@ -5,3 +5,4 @@
 
 // APB Peripherals
 #include "tim.h"
+#include "GPIO.h"

@@ -3,14 +3,6 @@
 /*
     APB1 Peripherals
 */
-    /* GPIO Ports */
-    #define GPIOG_BASE      (APB1_BASE + 0x00002000UL)
-    #define GPIOF_BASE      (APB1_BASE + 0x00001C00UL)
-    #define GPIOE_BASE      (APB1_BASE + 0x00001800UL)
-    #define GPIOD_BASE      (APB1_BASE + 0x00001400UL)
-    #define GPIOC_BASE      (APB1_BASE + 0x00001000UL)
-    #define GPIOB_BASE      (APB1_BASE + 0x00000C00UL)
-    #define GPIOA_BASE      (APB1_BASE + 0x00000800UL)
     /* ADC */
     #define ADC3_BASE       (APB1_BASE + 0x00003C00UL)
     #define ADC2_BASE       (APB1_BASE + 0x00002800UL)
@@ -37,11 +29,6 @@
     /* SPI */
     #define SPI3_BASE       (APB2_BASE + 0x00003C00UL)
     #define SPI2_BASE       (APB2_BASE + 0x00003800UL)
-    /* USART */
-    #define UART5_BASE      (APB2_BASE + 0x00005000UL)
-    #define UART4_BASE      (APB2_BASE + 0x00004C00UL)
-    #define USART3_BASE     (APB2_BASE + 0x00004800UL)
-    #define USART2_BASE     (APB2_BASE + 0x00004400UL)
     /* I2C */
     #define I2C1_BASE       (APB2_BASE + 0x00005400UL)
     #define I2C2_BASE       (APB2_BASE + 0x00005800UL)

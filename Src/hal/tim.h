@@ -2,7 +2,7 @@
 
 #include "common.h"
 
-
+/* Timer Bases */
 #define TIM14_BASE (APB1_BASE + 0x00002000UL)
 #define TIM13_BASE (APB1_BASE + 0x00001C00UL)
 #define TIM12_BASE (APB1_BASE + 0x00001800UL)
