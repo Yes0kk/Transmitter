@@ -1,28 +1,8 @@
-#define REG32(loc) (*(volatile uint32_t *)(loc))
 
-/* Peripheral */
-#define PERIPH_BASE     (0x40000000UL)
-
-/* Buses */
-#define AHB_BASE       (PERIPH_BASE + 0x00018000UL)
-#define APB2_BASE      (PERIPH_BASE + 0x00010000UL)
-#define APB1_BASE      (PERIPH_BASE + 0x00000000UL)
-
-/* 
-    AHB Peripherals 
-*/
-    /* Reset and Clock Control RCC */
-    #define RCC_BASE        (AHB_BASE + 0x0000A000UL)
-
+#pragma region APB1_Peripherals
 /*
     APB1 Peripherals
 */
-    /* Timers */
-    #define TIM11_BASE      (APB1_BASE + 0x00005400UL)
-    #define TIM10_BASE      (APB1_BASE + 0x00005000UL)
-    #define TIM9_BASE       (APB1_BASE + 0x00004C00UL)
-    #define TIM8_BASE       (APB1_BASE + 0x00003400UL)
-    #define TIM1_BASE       (APB1_BASE + 0x00002C00UL)
     /* GPIO Ports */
     #define GPIOG_BASE      (APB1_BASE + 0x00002000UL)
     #define GPIOF_BASE      (APB1_BASE + 0x00001C00UL)
@@ -43,20 +23,12 @@
     #define EXTI_BASE       (APB1_BASE + 0x00000400UL)
     /* AFIO */
     #define AFIO_BASE       (APB1_BASE + 0x00000000UL)
+#pragma endregion
 
+#pragma region APB2_Peripherals
 /*
     APB2 Peripherals
 */
-    /* Timers */
-    #define TIM14_BASE      (APB2_BASE + 0x00002000UL)
-    #define TIM13_BASE      (APB2_BASE + 0x00001C00UL)
-    #define TIM12_BASE      (APB2_BASE + 0x00001800UL)
-    #define TIM7_BASE       (APB2_BASE + 0x00001400UL)
-    #define TIM6_BASE       (APB2_BASE + 0x00001000UL)
-    #define TIM5_BASE       (APB2_BASE + 0x00000C00UL)
-    #define TIM4_BASE       (APB2_BASE + 0x00000800UL)
-    #define TIM3_BASE       (APB2_BASE + 0x00000400UL)
-    #define TIM2_BASE       (APB2_BASE + 0x00000000UL)
     /* Watchdog */
     #define IWDG_BASE       (APB2_BASE + 0x00003000UL)
     #define WWDG_BASE       (APB2_BASE + 0x00002C00UL)
@@ -84,4 +56,5 @@
     #define PWR_BASE        (APB2_BASE + 0x00007000UL)
     /* Digital to Analog Converter */
     #define DAC_BASE        (APB2_BASE + 0x00007400UL)
-    
+#pragma endregion
+

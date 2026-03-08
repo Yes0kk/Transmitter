@@ -1,0 +1,87 @@
+// ========================
+// TODO: APB1 PERIPHERALS
+// ========================
+
+// Timers
+// TODO: TIM9
+// TODO: TIM8
+// TODO: TIM1
+
+// GPIO Ports
+// TODO: GPIOG
+// TODO: GPIOF
+// TODO: GPIOE
+// TODO: GPIOD
+// TODO: GPIOC
+// TODO: GPIOB
+// TODO: GPIOA
+
+// ADC
+// TODO: ADC3
+// TODO: ADC2
+// TODO: ADC1
+
+// USART
+// TODO: USART1
+
+// SPI
+// TODO: SPI1
+
+// EXTI
+// TODO: EXTI
+
+// AFIO
+// TODO: AFIO
+
+
+// ========================
+// TODO: APB2 PERIPHERALS
+// ========================
+
+// Timers
+// TODO: TIM14
+// TODO: TIM13
+// TODO: TIM12
+// TODO: TIM7
+// TODO: TIM6
+// TODO: TIM5
+// TODO: TIM4
+// TODO: TIM3
+// TODO: TIM2
+
+// Watchdog
+// TODO: IWDG
+// TODO: WWDG
+
+// RTC
+// TODO: RTC
+
+// SPI
+// TODO: SPI3
+// TODO: SPI2
+
+// USART
+// TODO: UART5
+// TODO: UART4
+// TODO: USART3
+// TODO: USART2
+
+// I2C
+// TODO: I2C1
+// TODO: I2C2
+
+// USB
+// TODO: USB
+
+// CAN
+// TODO: CAN2
+// TODO: CAN1
+
+// Backup
+// TODO: BKP
+
+// Power
+// TODO: PWR
+
+// DAC
+// TODO: DAC
