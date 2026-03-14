@@ -3,7 +3,7 @@
 #include "common.h"
 
 /* RCC Base Address */
-#define RCC_BASE (AHB_BASE + 0x0000A000UL)
+#define RCC_BASE (AHB_BASE + 0x00009000UL)
 
 
 /*====================*/

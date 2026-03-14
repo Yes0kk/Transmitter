@@ -8,8 +8,11 @@
 #include "GPIO.h"
 #include "UART.h"
 #include "ADC.h"
-#include "watchdog.h"
+#include "WDG.h"
 #include "SPI.h"
 #include "EXTI.h"
-
-
+#include "I2C.h"
+#include "CAN.h"
+#include "USB.h"
+#include "DAC.h"
+#include "RTC.h"
