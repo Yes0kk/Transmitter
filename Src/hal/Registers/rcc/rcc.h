@@ -1,6 +1,6 @@
 #pragma once
 
-#include "common.h"
+#include "../device/memory_map.h"
 
 /* RCC Base Address */
 #define RCC_BASE (AHB_BASE + 0x00009000UL)

@@ -1,6 +1,6 @@
 #pragma once
 
-#include "common.h"
+#include "../device/memory_map.h"
 
 
 // SPI base addresses

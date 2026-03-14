@@ -2,11 +2,16 @@
     "configurations": [
         {
             "name": "STM32",
-            "compileCommands": "${workspaceFolder}/build/Debug/compile_commands.json",
+            "compileCommands": [
+                "${workspaceFolder}/build/Debug/compile_commands.json"
+            ],
             "compilerPath": "C:/Program Files (x86)/Arm/GNU Toolchain mingw-w64-i686-arm-none-eabi/bin/arm-none-eabi-gcc.exe",
             "intelliSenseMode": "gcc-arm",
             "cStandard": "c23",
-            "cppStandard": "c++26"
+            "cppStandard": "c++26",
+            "includePath": [
+                "${workspaceFolder}/**"
+            ]
         }
     ],
     "version": 4

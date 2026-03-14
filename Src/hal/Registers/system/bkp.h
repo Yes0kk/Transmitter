@@ -1,6 +1,6 @@
 #pragma once
 
-#include "common.h"
+#include "../device/memory_map.h"
 
 /* BKP Base Address */
 #define BKP_BASE	(APB1_BASE + 0x00002800UL)

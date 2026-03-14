@@ -1,6 +1,6 @@
 #pragma once
 
-#include "common.h"
+#include "../device/memory_map.h"
 
 /* Timer Bases */
 #define TIM14_BASE (APB1_BASE + 0x00002000UL)
