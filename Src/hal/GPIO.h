@@ -12,6 +12,8 @@
 #define GPIOE_BASE	(APB2_BASE + 0x00001800UL)
 #define GPIOF_BASE	(APB2_BASE + 0x00001C00UL)
 #define GPIOG_BASE	(APB2_BASE + 0x00002000UL)
+/* AFIO Base Address */
+#define AFIO_BASE	(APB2_BASE + 0x00000000UL)
 
 /*====================*/
 // Struct Definition  //
@@ -38,3 +40,5 @@ typedef struct GPIO_TypeDef
 #define GPIOE 	((GPIO_TypeDef *) GPIOE_BASE)
 #define GPIOF 	((GPIO_TypeDef *) GPIOF_BASE)
 #define GPIOG 	((GPIO_TypeDef *) GPIOG_BASE)
+// AFIO
+#define AFIO 	((GPIO_TypeDef *) AFIO_BASE)	// AFIO has the same struct as GPIO due to them having the same register layout
