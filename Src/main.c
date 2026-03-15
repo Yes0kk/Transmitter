@@ -1,6 +1,4 @@
-#include "hal/reg.h"
-#include "hal/common.h"
-#include <stdio.h>
+#include "hal/core/main.h"
 
 
 
