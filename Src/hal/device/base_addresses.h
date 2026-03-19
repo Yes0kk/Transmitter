@@ -1,4 +1,5 @@
-#pragma once
+#ifndef HAL_DEVICE_BASE_ADDRESSES_H
+#define HAL_DEVICE_BASE_ADDRESSES_H
 
 #include <stdint.h>
 #include <stdio.h>
@@ -10,3 +11,5 @@
 #define AHB_BASE  (PERIPHERAL_BASE + 0x00018000UL)
 #define APB2_BASE (PERIPHERAL_BASE + 0x00010000UL)
 #define APB1_BASE (PERIPHERAL_BASE + 0x00000000UL)
+
+#endif /* HAL_DEVICE_BASE_ADDRESSES_H */

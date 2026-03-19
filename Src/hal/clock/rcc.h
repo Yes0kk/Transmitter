@@ -1,6 +1,6 @@
 #pragma once
 
-#include "common.h"
+#include "../device/base_addresses.h"
 
 /* RCC Base Address */
 #define RCC_BASE (AHB_BASE + 0x0000A000UL)

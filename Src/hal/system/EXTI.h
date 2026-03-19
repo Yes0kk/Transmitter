@@ -1,6 +1,6 @@
 #pragma once
 
-#include "common.h"
+#include "../device/base_addresses.h"
 
 // EXTI base address
 #define EXTI_BASE       (APB2_BASE + 0x00000400UL)

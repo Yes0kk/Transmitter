@@ -1,6 +1,6 @@
 #pragma once
 
-#include "common.h"
+#include "../device/base_addresses.h"
 
 /* Timer Bases */
 #define TIM14_BASE (APB1_BASE + 0x00002000UL)
