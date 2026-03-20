@@ -114,6 +114,11 @@ target_compile_definitions(${CMAKE_PROJECT_NAME} PRIVATE
 # Add linked libraries
 target_link_libraries(${CMAKE_PROJECT_NAME} ${link_LIBS})
 
+# Includes
+file(GLOB_RECURSE sources_SRCS
+    ${CMAKE_CURRENT_SOURCE_DIR}/Src/*.c
+)
+
 # Compiler options
 target_compile_options(${CMAKE_PROJECT_NAME} PRIVATE
     ${cpu_PARAMS}
@@ -133,6 +138,13 @@ target_compile_options(${CMAKE_PROJECT_NAME} PRIVATE
     $<$<COMPILE_LANGUAGE:ASM>:-x assembler-with-cpp -MMD -MP>
     $<$<CONFIG:Debug>:-O0 -g3 -ggdb>
     $<$<CONFIG:Release>:-Os>
+)
+
+target_include_directories(Transmitter PRIVATE
+    ${include_DIRS}
+    ${CMAKE_SOURCE_DIR}
+    ${CMAKE_SOURCE_DIR}/Src
+    ${CMAKE_SOURCE_DIR}/Src/hal
 )
 
 # Linker options

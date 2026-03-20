@@ -1,10 +1,6 @@
 #pragma once
 
-<<<<<<<< HEAD:Src/hal/Registers/timers/tim.h
-#include "../device/memory_map.h"
-========
 #include "../device/base_addresses.h"
->>>>>>>> 889d5c478d538e0c1e3ec228e59dd548133ea27a:Src/hal/clock/tim.h
 
 /* Timer Bases */
 #define TIM14_BASE (APB1_BASE + 0x00002000UL)

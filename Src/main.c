@@ -1,4 +1,4 @@
-#include "hal/core/main.h"
+#include "../hal/core/core.h"
 
 
 
@@ -16,6 +16,8 @@ int main(void)
 
 void setup(void)
 {
+	HAL_Init();
+
 	printf("Hello World!\n");
 }
 
