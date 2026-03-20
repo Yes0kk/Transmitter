@@ -177,6 +177,110 @@ void TIM_enable(uint8_t timer)
             break;
     }
 }
+void TIM_toggle(uint8_t timer)
+{
+    // Toggle timer clock
+    switch(timer)
+    {
+        case 1:
+            RCC->APB2ENR ^= (1 << 11); // TIM1EN
+            break;
+        case 2:
+            RCC->APB1ENR ^= (1 << 0); // TIM2EN
+            break;
+        case 3:
+            RCC->APB1ENR ^= (1 << 1); // TIM3EN
+            break;
+        case 4:
+            RCC->APB1ENR ^= (1 << 2); // TIM4EN
+            break;
+        case 5:
+            RCC->APB1ENR ^= (1 << 3); // TIM5EN
+            break;
+        case 6:
+            RCC->APB1ENR ^= (1 << 4); // TIM6EN
+            break;
+        case 7:
+            RCC->APB1ENR ^= (1 << 5); // TIM7EN
+            break;
+        case 8:
+            RCC->APB2ENR ^= (1 << 13); // TIM8EN
+            break;
+        case 9:
+            RCC->APB2ENR ^= (1 << 19); // TIM9EN
+            break;
+        case 10:
+            RCC->APB2ENR ^= (1 << 20); // TIM10EN
+            break;
+        case 11:
+            RCC->APB2ENR ^= (1 << 21); // TIM11EN
+            break;
+        case 12:
+            RCC->APB1ENR ^= (1 << 6); // TIM12EN
+            break;
+        case 13:
+            RCC->APB1ENR ^= (1 << 7); // TIM13EN
+            break;
+        case 14:
+            RCC->APB1ENR ^= (1 << 8); // TIM14EN
+            break;
+        default:
+            // Invalid timer number, do nothing or handle error
+            break;
+    }
+}
+void TIM_disable(uint8_t timer)
+{
+    // Disable timer clock
+    switch(timer)
+    {
+        case 1:
+            RCC->APB2ENR &= ~(1 << 11); // TIM1EN
+            break;
+        case 2:
+            RCC->APB1ENR &= ~(1 << 0); // TIM2EN
+            break;
+        case 3:
+            RCC->APB1ENR &= ~(1 << 1); // TIM3EN
+            break;
+        case 4:
+            RCC->APB1ENR &= ~(1 << 2); // TIM4EN
+            break;
+        case 5:
+            RCC->APB1ENR &= ~(1 << 3); // TIM5EN
+            break;
+        case 6:
+            RCC->APB1ENR &= ~(1 << 4); // TIM6EN
+            break;
+        case 7:
+            RCC->APB1ENR &= ~(1 << 5); // TIM7EN
+            break;
+        case 8:
+            RCC->APB2ENR &= ~(1 << 13); // TIM8EN
+            break;
+        case 9:
+            RCC->APB2ENR &= ~(1 << 19); // TIM9EN
+            break;
+        case 10:
+            RCC->APB2ENR &= ~(1 << 20); // TIM10EN
+            break;
+        case 11:
+            RCC->APB2ENR &= ~(1 << 21); // TIM11EN
+            break;
+        case 12:
+            RCC->APB1ENR &= ~(1 << 6); // TIM12EN
+            break;
+        case 13:
+            RCC->APB1ENR &= ~(1 << 7); // TIM13EN
+            break;
+        case 14:
+            RCC->APB1ENR &= ~(1 << 8); // TIM14EN
+            break;
+        default:
+            // Invalid timer number, do nothing
+            break;
+    }
+}
 
 #pragma endregion
 
