@@ -2,8 +2,14 @@
 
 
 
-void HAL_Init(void)
+HAL_status HAL_Init(void)
 {
-    // Initialize system clock(s)
-    
+	HAL_status status = HAL_OK;
+
+	// Init CLOCK
+    status = CLOCK_init();
+	if (status != HAL_OK)
+		return status;
+
+	return status;
 }

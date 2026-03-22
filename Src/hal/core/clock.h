@@ -1,6 +1,7 @@
 #pragma once
 
 #include "../clock/clock.h"
+#include "../core/core.h"
 #include "config.h"
 
-void CLOCK_init(void);
+HAL_status CLOCK_init(void);

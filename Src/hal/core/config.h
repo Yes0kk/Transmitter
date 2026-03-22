@@ -10,16 +10,20 @@
 	0b100 -> SYSCLK, 
 	0b101 -> HSI, 
 	0b110 -> HSE, 
-	0b111 -> PLL
+	0b111 -> PLL/2
 */
 #define CONFIG_MCO_USE_CLOCK 0b100
 
 /*=========================*/
-/* CLOCK Source Settings   */
+/* SYSCLK Settings		   */
 /*=========================*/
 
-#define CONFIG_CLOCK_USE_HSI      0
-#define CONFIG_CLOCK_USE_HSE      1
+/*	0b00 -> HSI,
+	0b01 -> HSE,
+	0b10 -> PLL,
+	0b11 -> NOT ALLOWED
+*/
+#define CONFIG_SYSCLK 0b10
 
 /*=========================*/
 /* CLOCK Settings          */

@@ -74,6 +74,20 @@ typedef struct
 #define RCC_CR_PLLRDY_Pos       25
 #define RCC_CR_PLLRDY_Msk       (1U << RCC_CR_PLLRDY_Pos)
 
+/* HSITRIM: Internal High-Speed clock trimming (5 bits) */
+#define RCC_CR_HSITRIM_VALUE(x)   (((x) & 0x1FU) << RCC_CR_HSITRIM_Pos)
+
+/* HSICAL: Internal High-Speed clock calibration (8 bits, read-only) */
+#define RCC_CR_HSICAL_VALUE(x)    (((x) & 0xFFU) << RCC_CR_HSICAL_Pos)
+
+/* PLLSRC: PLL entry clock source */
+#define RCC_CFGR_PLLSRC_HSI_DIV2  (0U << RCC_CFGR_PLLSRC_Pos)
+#define RCC_CFGR_PLLSRC_HSE       (1U << RCC_CFGR_PLLSRC_Pos)
+
+/* PLLXTPRE: HSE divider for PLL entry */
+#define RCC_CFGR_PLLXTPRE_HSE     (0U << RCC_CFGR_PLLXTPRE_Pos)
+#define RCC_CFGR_PLLXTPRE_HSE_DIV2 (1U << RCC_CFGR_PLLXTPRE_Pos)
+
 
 /*====================*/
 /* RCC_CFGR Register  */
@@ -123,6 +137,72 @@ typedef struct
 #define RCC_CFGR_MCO_Pos        24
 #define RCC_CFGR_MCO_Msk        (0x7U << RCC_CFGR_MCO_Pos)
 
+/* MCO source values */
+#define RCC_CFGR_MCO_NONE       (0b000U << RCC_CFGR_MCO_Pos) // no clock
+#define RCC_CFGR_MCO_SYSTEM     (0b100U << RCC_CFGR_MCO_Pos) // system clock
+#define RCC_CFGR_MCO_HSI        (0b101U << RCC_CFGR_MCO_Pos) // HSI clock
+#define RCC_CFGR_MCO_HSE        (0b110U << RCC_CFGR_MCO_Pos) // HSE clock
+#define RCC_CFGR_MCO_PLL_DIV2   (0b111U << RCC_CFGR_MCO_Pos) // PLL clock divided by 2
+
+/* System clock switch */
+#define RCC_CFGR_SW_HSI         (0b00U << RCC_CFGR_SW_Pos)
+#define RCC_CFGR_SW_HSE         (0b01U << RCC_CFGR_SW_Pos)
+#define RCC_CFGR_SW_PLL         (0b10U << RCC_CFGR_SW_Pos)
+#define RCC_CFGR_SW_NONE        (0b11U << RCC_CFGR_SW_Pos)
+
+/* System clock switch status */
+#define RCC_CFGR_SWS_HSI        (0b00U << RCC_CFGR_SWS_Pos)
+#define RCC_CFGR_SWS_HSE        (0b01U << RCC_CFGR_SWS_Pos)
+#define RCC_CFGR_SWS_PLL        (0b10U << RCC_CFGR_SWS_Pos)
+#define RCC_CFGR_SWS_NONE       (0b11U << RCC_CFGR_SWS_Pos)
+
+/* AHB prescaler values */
+#define RCC_CFGR_HPRE_DIV1      (0b0000U << RCC_CFGR_HPRE_Pos)
+#define RCC_CFGR_HPRE_DIV2      (0b1000U << RCC_CFGR_HPRE_Pos)
+#define RCC_CFGR_HPRE_DIV4      (0b1001U << RCC_CFGR_HPRE_Pos)
+#define RCC_CFGR_HPRE_DIV8      (0b1010U << RCC_CFGR_HPRE_Pos)
+#define RCC_CFGR_HPRE_DIV16     (0b1011U << RCC_CFGR_HPRE_Pos)
+#define RCC_CFGR_HPRE_DIV64     (0b1100U << RCC_CFGR_HPRE_Pos)
+#define RCC_CFGR_HPRE_DIV128    (0b1101U << RCC_CFGR_HPRE_Pos)
+#define RCC_CFGR_HPRE_DIV256    (0b1110U << RCC_CFGR_HPRE_Pos)
+#define RCC_CFGR_HPRE_DIV512    (0b1111U << RCC_CFGR_HPRE_Pos)
+
+/* APB1 prescaler values */
+#define RCC_CFGR_PPRE1_DIV1     (0b000U << RCC_CFGR_PPRE1_Pos)
+#define RCC_CFGR_PPRE1_DIV2     (0b100U << RCC_CFGR_PPRE1_Pos)
+#define RCC_CFGR_PPRE1_DIV4     (0b101U << RCC_CFGR_PPRE1_Pos)
+#define RCC_CFGR_PPRE1_DIV8     (0b110U << RCC_CFGR_PPRE1_Pos)
+#define RCC_CFGR_PPRE1_DIV16    (0b111U << RCC_CFGR_PPRE1_Pos)
+
+/* APB2 prescaler values */
+#define RCC_CFGR_PPRE2_DIV1     (0b000U << RCC_CFGR_PPRE2_Pos)
+#define RCC_CFGR_PPRE2_DIV2     (0b100U << RCC_CFGR_PPRE2_Pos)
+#define RCC_CFGR_PPRE2_DIV4     (0b101U << RCC_CFGR_PPRE2_Pos)
+#define RCC_CFGR_PPRE2_DIV8     (0b110U << RCC_CFGR_PPRE2_Pos)
+#define RCC_CFGR_PPRE2_DIV16    (0b111U << RCC_CFGR_PPRE2_Pos)
+
+/* ADC prescaler values */
+#define RCC_CFGR_ADCPRE_DIV2    (0b00U << RCC_CFGR_ADCPRE_Pos)
+#define RCC_CFGR_ADCPRE_DIV4    (0b01U << RCC_CFGR_ADCPRE_Pos)
+#define RCC_CFGR_ADCPRE_DIV6    (0b10U << RCC_CFGR_ADCPRE_Pos)
+#define RCC_CFGR_ADCPRE_DIV8    (0b11U << RCC_CFGR_ADCPRE_Pos)
+
+/* PLL multiplication factor values */
+#define RCC_CFGR_PLLMUL_X2      (0b0000U << RCC_CFGR_PLLMUL_Pos)
+#define RCC_CFGR_PLLMUL_X3      (0b0001U << RCC_CFGR_PLLMUL_Pos)
+#define RCC_CFGR_PLLMUL_X4      (0b0010U << RCC_CFGR_PLLMUL_Pos)
+#define RCC_CFGR_PLLMUL_X5      (0b0011U << RCC_CFGR_PLLMUL_Pos)
+#define RCC_CFGR_PLLMUL_X6      (0b0100U << RCC_CFGR_PLLMUL_Pos)
+#define RCC_CFGR_PLLMUL_X7      (0b0101U << RCC_CFGR_PLLMUL_Pos)
+#define RCC_CFGR_PLLMUL_X8      (0b0110U << RCC_CFGR_PLLMUL_Pos)
+#define RCC_CFGR_PLLMUL_X9      (0b0111U << RCC_CFGR_PLLMUL_Pos)
+#define RCC_CFGR_PLLMUL_X10     (0b1000U << RCC_CFGR_PLLMUL_Pos)
+#define RCC_CFGR_PLLMUL_X11     (0b1001U << RCC_CFGR_PLLMUL_Pos)
+#define RCC_CFGR_PLLMUL_X12     (0b1010U << RCC_CFGR_PLLMUL_Pos)
+#define RCC_CFGR_PLLMUL_X13     (0b1011U << RCC_CFGR_PLLMUL_Pos)
+#define RCC_CFGR_PLLMUL_X14     (0b1100U << RCC_CFGR_PLLMUL_Pos)
+#define RCC_CFGR_PLLMUL_X15     (0b1101U << RCC_CFGR_PLLMUL_Pos)
+#define RCC_CFGR_PLLMUL_X16     (0b1110U << RCC_CFGR_PLLMUL_Pos)
 
 /*====================*/
 /* RCC_CIR Register   */
@@ -565,6 +645,10 @@ typedef struct
 /* RTCSEL: RTC clock source selection (2 bits) */
 #define RCC_BDCR_RTCSEL_Pos         8
 #define RCC_BDCR_RTCSEL_Msk         (0x3U << RCC_BDCR_RTCSEL_Pos)
+#define RCC_BDCR_RTCSEL_NOCLOCK     (0b00U << RCC_BDCR_RTCSEL_Pos)
+#define RCC_BDCR_RTCSEL_LSE         (0b01U << RCC_BDCR_RTCSEL_Pos)
+#define RCC_BDCR_RTCSEL_LSI         (0b10U << RCC_BDCR_RTCSEL_Pos)
+#define RCC_BDCR_RTCSEL_HSE_DIV32   (0b11U << RCC_BDCR_RTCSEL_Pos)
 
 /* RTCEN: RTC clock enable */
 #define RCC_BDCR_RTCEN_Pos          15
