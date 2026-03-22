@@ -7,12 +7,14 @@
 
 HAL_status CLOCK_init(void)
 {
-    // Initialize system clock(s)
+	HAL_status status = HAL_OK;
 
 	// Init SYSCLK
-    CLOCK_init_SYSCLK();
+   status = CLOCK_init_SYSCLK();
+   if(status != HAL_OK)
+		return HAL_ERROR;
 
-	
+	return status;
 }
 
 // Initial startup function for SYSCLK
@@ -20,10 +22,9 @@ HAL_status CLOCK_init_SYSCLK(void)
 {
 	// Begin setting the registers for SYSCLK
 
-	// Clear the SW bits 
-	RCC->CFGR &= ~(RCC_CFGR_SW_Msk);
-	// Set the SW bits
-	RCC->CFGR |= (CONFIG_SYSCLK << RCC_CFGR_SW_Pos);
+	HAL_status status = CLOCK_set_SYSCLK(CONFIG_SYSCLK);
+	if (status != HAL_OK)
+		return HAL_ERROR;
 
 	return CLOCK_confirm_SYSCLK();
 }
@@ -38,7 +39,7 @@ HAL_status CLOCK_init_MCO(void)
     switch (CONFIG_MCO_USE_CLOCK)
 	{
 		// Fastest case (SYSCLK) -> could be over 72 MHz, we use a seperate MCO clock if it is
-		case RCC_CFGR_MCO_SYSTEM >> RCC_CFGR_MCO_Pos:
+		case CLOCK_MCOCLK_SYSCLK:
 		{
 			// First check if SYSCLK is confirmed, then confirm its speed
 			uint32_t freq = CLOCK_get_SYSCLK_freq();
@@ -56,7 +57,7 @@ HAL_status CLOCK_init_MCO(void)
 			// Continue to get a working clock
 		}
 		// Second fastest case (PLL/2) -> could be over 72MHz, we use a seperate MCO clock if it is
-		case RCC_CFGR_MCO_PLL_DIV2 >> RCC_CFGR_MCO_Pos:
+		case CLOCK_MCOCLK_PLL_DIV2:
 		{
 			// First check if PLL is confirmed, then confirm its speed
 			if ((CLOCK_confirm_PLL() != HAL_OK) || (CLOCK_get_PLL_freq() / 2) > SETTING_DEVICE_MAX_MCO_FREQ)
@@ -72,7 +73,7 @@ HAL_status CLOCK_init_MCO(void)
 			}
 		}
 		// Third fastest case (HSE) -> could be over 72MHz, we use a seperate MCO clock if it is
-		case RCC_CFGR_MCO_HSE >> RCC_CFGR_MCO_Pos:
+		case CLOCK_MCOCLK_HSE:
 		{
 			// First check if HSE is confirmed, then confirm its speed
 			if ((CLOCK_confirm_HSE() != HAL_OK) || (CONFIG_HSE_FREQ > SETTING_DEVICE_MAX_MCO_FREQ))
@@ -88,10 +89,10 @@ HAL_status CLOCK_init_MCO(void)
 			}
 		}
 		// Last and final case (HSI) before an error is thrown
-		case RCC_CFGR_MCO_HSI >> RCC_CFGR_MCO_Pos:
+		case CLOCK_MCOCLK_HSI:
 		{
 			// First check if HSI is confirmed, then confirm its speed
-			if (SETTING_HSI_FREQ > SETTING_DEVICE_MAX_MCO_FREQ)
+			if ((CLOCK_confirm_HSI() != HAL_OK) || (SETTING_HSI_FREQ > SETTING_DEVICE_MAX_MCO_FREQ))
 			{
 				// We set status to error because this is the last case scenario.
 				status = HAL_ERROR;
@@ -198,16 +199,8 @@ HAL_status CLOCK_confirm_SYSCLK(void)
 		// PLL used as system clock
 		case 2:
 		{
-			// 0 for HSI / 2, 1 for HSE
-			bool PLLSource = 	(RCC->CFGR & RCC_CFGR_PLLSRC_Msk) != 0;
-			
-			// PLLMUL is encoded as (mul - 2)
-			uint8_t mul = 		((RCC->CFGR & RCC_CFGR_PLLMUL_Msk) >> RCC_CFGR_PLLMUL_Pos) + 2;
-			// HSE divider for PLL entry (1 or 2)
-			uint8_t HSEDIV = 	((RCC->CFGR & RCC_CFGR_PLLXTPRE_Msk) != 0) ? 2 : 1; 
-
-			// Calculate PLL frequency based on source and multiplier
-			systemClockFreq = PLLSource ? ((CONFIG_HSE_FREQ / HSEDIV) * mul) : ((SETTING_HSI_FREQ / 2) * mul); 
+			// Get PLL frequency
+			systemClockFreq = CLOCK_get_PLL_freq();
 
 			// Confirm PLL is stable and ready to be used as a clock source
 			status = CLOCK_confirm_PLL();
@@ -250,6 +243,7 @@ uint32_t CLOCK_get_PLL_freq(void)
 	return source ? ((CONFIG_HSE_FREQ / HSEDIV) * mul) : ((SETTING_HSI_FREQ / 2) * mul); 
 }
 
+// TODO: Fix this function. It is not a pure getter
 // Returns the speed of SYSCLK. If it returns 0, error has occured.
 uint32_t CLOCK_get_SYSCLK_freq(void)
 {
@@ -295,6 +289,82 @@ uint32_t CLOCK_get_SYSCLK_freq(void)
 	}
 }
 
+//TODO: Finish this function
+// Sets the PLL multiplier
+HAL_status CLOCK_set_PLL_MULTIPLIER(uint8_t mult)
+{
+	// Clear the PLLMUL
+	RCC->CFGR &= ~(RCC_CFGR_PLLMUL_Msk);
+
+	// Check if SYSCLK is using PLL
+	bool sys = (RCC->CFGR & RCC_CFGR_SWS_PLL) == (RCC_CFGR_SWS_PLL);
+
+	if (sys)
+	{
+		// Disable PLL, fallback to HSI
+
+	}
+	else
+	{
+
+	}
+
+}
+
+// Set SYSCLK to different clock
+HAL_status CLOCK_set_SYSCLK(CLOCK_SYSCLK_SOURCE clock)
+{
+	// Make sure it is a valid clock
+	if (clock < CLOCK_SYSCLK_HSI || clock > CLOCK_SYSCLK_PLL)
+    	return HAL_INVALID_PARAM;
+	
+	// Initialize selection with the safest clock
+	CLOCK_SYSCLK_SOURCE selected = CLOCK_SYSCLK_HSI;
+		
+	switch (clock)
+	{
+		// PLL is set as SYSCLK
+		case (CLOCK_SYSCLK_PLL):
+		{
+			if ((CLOCK_confirm_PLL() == HAL_OK) && (CLOCK_get_PLL_freq() <= SETTING_DEVICE_MAX_SYSCLK_FREQ))
+			{
+				selected = CLOCK_SYSCLK_PLL;
+				break;
+			}
+			// Fallthrough if not confirmed
+		}
+		// HSE is set as SYSCLK
+		case (CLOCK_SYSCLK_HSE):
+		{
+			if ((CLOCK_confirm_HSE() == HAL_OK) && (CONFIG_HSE_FREQ <= SETTING_DEVICE_MAX_SYSCLK_FREQ))
+			{
+				selected = CLOCK_SYSCLK_HSE;
+				break;
+			}
+			// Fallthrough if not confirmed
+		}
+		// HSI is set as SYSCLK. This should never fail.
+		case (CLOCK_SYSCLK_HSI):
+		{
+			if ((CLOCK_confirm_HSI() == HAL_OK) && (SETTING_HSI_FREQ <= SETTING_DEVICE_MAX_SYSCLK_FREQ))
+			{
+				selected = CLOCK_SYSCLK_HSI;
+				break;
+			}
+			// Fallthrough if not confirmed
+		}
+		// Something bad happened :(
+		default:
+			return HAL_ERROR;
+	}
+
+	// Clear SW bits
+	RCC->CFGR &= ~(RCC_CFGR_SW_Msk);
+	// Set SW bits
+	RCC->CFGR |= (selected << RCC_CFGR_SW_Pos);
+
+	return CLOCK_confirm_SYSCLK();
+}
 
 // TODO: Rework the functions below
 
