@@ -1,4 +1,6 @@
 #include "../hal/core/clock.h"
+#include "clock/rcc.h"
+#include "config.h"
 #include "core.h"
 
 
@@ -11,7 +13,53 @@ void CLOCK_init(void)
     // MCO enable
 }
 
-HAL_status CLOCK_check_SYSCLK(void)
+// Makes sure the the HSE is stable and ready to be used as a clock source
+HAL_status CLOCK_confirm_HSE(void)
+{
+	if ((RCC->CR & RCC_CR_HSEON_Msk) == 0)
+		return HAL_FALSE;
+
+	uint32_t timeout = CONFIG_CLOCK_TIMEOUT; // Timeout loop
+	while (((RCC->CR & RCC_CR_HSERDY_Msk) == 0) && timeout--); // Wait for HSE to stabilize
+	if (timeout == 0)
+		return HAL_TIMEOUT; // HSE failed to stabilize within timeout
+	return HAL_OK;
+}
+
+// Makes sure the the HSI is stable and ready to be used as a clock source
+HAL_status CLOCK_confirm_HSI(void)
+{
+	if (((RCC->CR & RCC_CR_HSION_Msk) == 0))
+		return HAL_FALSE;
+
+	uint32_t timeout = CONFIG_CLOCK_TIMEOUT; // Timeout loop
+	while (((RCC->CR & RCC_CR_HSIRDY_Msk) == 0) && timeout--); // Wait for HSI to stabilize
+	if (timeout == 0)
+		return HAL_TIMEOUT; // HSI failed to stabilize within timeout
+	return HAL_OK;
+}
+
+// Makes sure the PLL is stable and ready to be used as a clock source
+HAL_status CLOCK_confirm_PLL(void)
+{
+	if (((RCC->CR & RCC_CR_PLLON_Msk) == 0))
+		return HAL_FALSE;
+
+	// 0 = HSI/2, 1 = HSE
+	bool PLLSource = 	(RCC->CFGR & RCC_CFGR_PLLSRC_Msk) != 0;
+	HAL_status tempStatus = PLLSource ? CLOCK_confirm_HSE() : CLOCK_confirm_HSI();
+	if (tempStatus != HAL_OK)
+		return tempStatus;
+
+	uint32_t timeout = CONFIG_CLOCK_TIMEOUT; // Timeout loop
+	while (((RCC->CR & RCC_CR_PLLRDY_Msk) == 0) && timeout--); // Wait for PLL to stabilize
+	if (timeout == 0)
+		return HAL_TIMEOUT; // PLL failed to stabilize within timeout
+	return HAL_OK;
+}
+
+// Confirms the current system clock source and frequency, and checks if it is valid (not exceeding 72 MHz)
+HAL_status CLOCK_confirm_SYSCLK(void)
 {
 	HAL_status status = HAL_OK;
 
@@ -19,34 +67,55 @@ HAL_status CLOCK_check_SYSCLK(void)
 	uint32_t systemClockFreq = 0;
 
 	// Current system clock source
-	uint32_t source = (RCC->CFGR & RCC_CFGR_SWS_Msk) >> RCC_CFGR_SWS_Pos;
+	uint8_t source = (RCC->CFGR & RCC_CFGR_SWS_Msk) >> RCC_CFGR_SWS_Pos;
 	
 	switch (source)
 	{
 		// HSI used as system clock
 		case 0:
 		{
-			// 8 MHZ
-			bool HSI = 		(RCC->CR & RCC_CR_HSION_Msk) != 0;
-			bool HSIRDY = 	(RCC->CR & RCC_CR_HSIRDY_Msk) != 0;
+			// HSI is always 8 MHz
+			systemClockFreq = SETTING_HSI_FREQ; 
 
-			systemClockFreq = 8000000; // HSI is always 8 MHz
+			// Confirm HSI is stable and ready to be used as a clock source
+			status = CLOCK_confirm_HSI();
+			if (status != HAL_OK)
+				return status; // Propagate HSI confirmation status
+
+			break;
 		}
 		// HSE used as system clock
 		case 1:
 		{
-			// 8 MHZ
-			bool HSE = 		(RCC->CR & RCC_CR_HSEON_Msk) != 0;
-			bool HSERDY = 	(RCC->CR & RCC_CR_HSERDY_Msk) != 0;
+			// HSE frequency is defined in config.h
+			systemClockFreq = CONFIG_HSE_FREQ; 
 
-			systemClockFreq = 8000000; // HSE is typically 8 MHz (depends on crystal)
+			// Confirm HSE is stable and ready to be used as a clock source
+			status = CLOCK_confirm_HSE();
+			if (status != HAL_OK)
+				return status; // Propagate HSE confirmation status
+				
+			break;
 		}
 		// PLL used as system clock
 		case 2:
 		{
-			// Clock Multiplier (x2-x16)
-			bool PLL = 		(RCC->CR & RCC_CR_PLLON_Msk) != 0;
-			bool PLLRDY = 	(RCC->CR & RCC_CR_PLLRDY_Msk) != 0;
+			// 0 for HSI / 2, 1 for HSE
+			bool PLLSource = 	(RCC->CFGR & RCC_CFGR_PLLSRC_Msk) != 0;
+			
+			// PLLMUL is encoded as (mul - 2)
+			uint8_t mul = 		((RCC->CFGR & RCC_CFGR_PLLMUL_Msk) >> RCC_CFGR_PLLMUL_Pos) + 2;
+			// HSE divider for PLL entry (1 or 2)
+			uint8_t HSEDIV = 	((RCC->CFGR & RCC_CFGR_PLLXTPRE_Msk) != 0) ? 2 : 1; 
+
+			// Calculate PLL frequency based on source and multiplier
+			systemClockFreq = PLLSource ? ((CONFIG_HSE_FREQ / HSEDIV) * mul) : ((SETTING_HSI_FREQ / 2) * mul); 
+
+			// Confirm PLL is stable and ready to be used as a clock source
+			status = CLOCK_confirm_PLL();
+			if (status != HAL_OK)
+				return status; // Propagate PLL confirmation status
+			break;
 		}
 		// No clock used as system clock
 		case 3:
@@ -62,26 +131,117 @@ HAL_status CLOCK_check_SYSCLK(void)
 		}
 	}
 
-	if (systemClockFreq > 72000000)
+	// Confirm the system clock frequency does not exceed the maximum allowed frequency for the device
+	if (systemClockFreq > SETTING_DEVICE_MAX_SYSCLK_FREQ)
 		status = HAL_ERROR; // System clock exceeds maximum frequency
 
 	return status;
 }
 
-void MCO_enable(void)
+// Returns the speed of the PLL output clock (in Hz) based on the current PLL registers
+uint32_t CLOCK_get_PLL_freq(void)
 {
-	RCC->CFGR &= ~(0b111 << 24); // Clear MCO bits
+	// 0 for HSI / 2, 1 for HSE
+	bool source = 		(RCC->CFGR & RCC_CFGR_PLLSRC_Msk) != 0;
+	// PLLMUL is encoded as (mul - 2)
+	uint8_t mul = 		((RCC->CFGR & RCC_CFGR_PLLMUL_Msk) >> RCC_CFGR_PLLMUL_Pos) + 2;
+	// HSE divider for PLL entry (1 or 2)
+	uint8_t HSEDIV = 		((RCC->CFGR & RCC_CFGR_PLLXTPRE_Msk) != 0) ? 2 : 1; 
 
-    // Careful, the MCO should NOT exceed 50 MHz. (the maximum IO speed)
-    if (CONFIG_USE_PLL)
-        RCC->CFGR |= (0b111 << 24); // Set MCO to HSE after PLL (PLL / 2 MHz)
-    else if (CONFIG_USE_HSI)
-        RCC->CFGR |= (0b101 << 24); // Set MCO to HSI after PLL (HSI MHz)
-    else if (CONFIG_USE_HSE)
-        RCC->CFGR |= (0b110 << 24); // Set MCO to HSE  (HSE MHz)
-    else
-        RCC->CFGR |= (0b100 << 24); // Set MCO to not use any clock
+	// Calculate PLL frequency based on source and multiplier
+	return source ? ((CONFIG_HSE_FREQ / HSEDIV) * mul) : ((SETTING_HSI_FREQ / 2) * mul); 
 }
+
+// Initial startup function for the MCO
+HAL_status CLOCK_init_MCO(void)
+{
+	HAL_status status = HAL_OK;
+	// Clear bits just in case
+	RCC->CFGR &= ~(RCC_CFGR_MCO_Msk);
+
+    switch (CONFIG_MCO_USE_CLOCK)
+	{
+		// Fastest case (PLL) -> could be over 72 MHz, we use a seperate MCO clock if it is
+		case 0b100:
+		{
+			// Here the speed is PLL
+			uint32_t PLLfreq = CLOCK_get_PLL_freq();
+			if (PLLfreq > SETTING_DEVICE_MAX_MCO_FREQ)
+			{
+				status = HAL_PARTIAL_OK;
+				// Fallthrough
+			}
+			else
+			{
+				// Set the MCO Clock to config
+				RCC->CFGR |= (0b100 << RCC_CFGR_MCO_Pos);
+				break;
+			}
+			// Continue to get a working clock
+		}
+		// Second fastest case (PLL/2) -> could be over 72MHz, we use a seperate MCO clock if it is
+		case 0b111:
+		{
+			// Here the speed is PLL/2
+			uint32_t PLLfreq = CLOCK_get_PLL_freq() / 2;
+			if (PLLfreq > SETTING_DEVICE_MAX_MCO_FREQ)
+			{
+				status = HAL_PARTIAL_OK;
+				// Fallthrough
+			}
+			else
+			{
+				// Set the MCO Clock to config
+				RCC->CFGR |= (0b111 << RCC_CFGR_MCO_Pos);
+				break;
+			}
+		}
+		// Third fastest case (HSE) -> could be over 72MHz, we use a seperate MCO clock if it is
+		case 0b110:
+		{
+			// Here the speed is HSE
+			uint32_t HSEfreq = CONFIG_HSE_FREQ;
+			if (HSEfreq > SETTING_DEVICE_MAX_MCO_FREQ)
+			{
+				status = HAL_PARTIAL_OK;
+				// Fallthrough
+			}
+			else
+			{
+				// Set the MCO Clock to config
+				RCC->CFGR |= (0b110 << RCC_CFGR_MCO_Pos);
+				break;
+			}
+		}
+		// Last and final case before an error is thrown
+		case 0b101:
+		{
+			// Here the speed is HSI
+			uint32_t HSIfreq = SETTING_HSI_FREQ;
+			if (HSIfreq > SETTING_DEVICE_MAX_MCO_FREQ)
+			{
+				// We return error because this is the last case scenario.
+				status = HAL_ERROR;
+				// Fallthrough
+			}
+			else
+			{
+				// Set the MCO Clock to config
+				RCC->CFGR |= (0b101 << RCC_CFGR_MCO_Pos);
+				break;
+			}
+		}
+		// Either no clock is selected, or none of the other clocks were in the acceptable speed range
+		default:
+		{
+			return status;
+		}
+	}
+	return status;
+}
+
+// TODO: Rework the functions below
+
 
 #pragma region PLL Control
 HAL_status PLL_enable(void)

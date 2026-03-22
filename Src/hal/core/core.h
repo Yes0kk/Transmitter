@@ -17,9 +17,12 @@
 typedef enum HAL_status
 {
 	HAL_OK = 0,
+	HAL_FALSE,
 	HAL_ERROR,
 	HAL_INVALID_PARAM,
 	HAL_TIMEOUT,
+	HAL_PARTIAL_OK,
+
 } HAL_status; 
 
 void HAL_Init(void);
