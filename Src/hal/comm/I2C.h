@@ -4,8 +4,8 @@
 
 
 // I2C Base Addresses
-#define I2C1_BASE       (APB2_BASE + 0x00005400UL)
-#define I2C2_BASE       (APB2_BASE + 0x00005800UL)
+#define I2C1_BASE       (APB1_BASE + 0x00005400UL)
+#define I2C2_BASE       (APB1_BASE + 0x00005800UL)
 
 
 /*====================*/
@@ -29,3 +29,4 @@ typedef struct I2C_TypeDef
 
 // I2C 
 #define I2C1 	((I2C_TypeDef *) I2C1_BASE)
+#define I2C2 	((I2C_TypeDef *) I2C2_BASE)

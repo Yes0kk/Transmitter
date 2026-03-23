@@ -31,6 +31,18 @@ typedef struct GPIO_TypeDef
 	volatile uint32_t LCKR;		// 0x18
 } GPIO_TypeDef;
 
+/* ALTERNATE FUNCTION I/O */
+typedef struct AFIO_TypeDef
+{
+	volatile uint32_t EVCR;		// 0x00
+	volatile uint32_t MAPR;		// 0x04
+	volatile uint32_t EXTICR1;	// 0x08
+	volatile uint32_t EXTICR2;	// 0x0C
+	volatile uint32_t EXTICR3;	// 0x10
+	volatile uint32_t EXTICR4;	// 0x14
+	volatile uint32_t MAPR2;	// 0x18
+} AFIO_TypeDef;
+
 
 // GPIO Ports
 #define GPIOA 	((GPIO_TypeDef *) GPIOA_BASE)
@@ -41,4 +53,4 @@ typedef struct GPIO_TypeDef
 #define GPIOF 	((GPIO_TypeDef *) GPIOF_BASE)
 #define GPIOG 	((GPIO_TypeDef *) GPIOG_BASE)
 // AFIO
-#define AFIO 	((GPIO_TypeDef *) AFIO_BASE)	// AFIO has the same struct as GPIO due to them having the same register layout
+#define AFIO 	((AFIO_TypeDef *) AFIO_BASE)

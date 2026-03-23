@@ -62,3 +62,8 @@ typedef struct CAN_TypeDef
 
 } CAN_TypeDef;
 
+
+// CAN
+#define CAN1 ((CAN_TypeDef *) CAN1_BASE)
+#define CAN2 ((CAN_TypeDef *) CAN2_BASE)
+

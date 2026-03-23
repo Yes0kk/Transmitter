@@ -21,8 +21,8 @@
 #define CONFIG_USE_PLL         1
 // 1 = HSE, 0 = HSI / 2
 #define CONFIG_PLL_SOURCE_HSE  1
-// *9 = 72 MHz system clock
-#define CONFIG_PLL_MUL         0x0111   // 0x0111 -> *9
+// x*Clock speed = System clock speed (max 72 MHz) 
+#define CONFIG_PLL_MUL         9
 
 
 /*=========================*/

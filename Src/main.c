@@ -1,6 +1,4 @@
-#include "hal/reg.h"
-#include "hal/common.h"
-#include <stdio.h>
+#include "../hal/core/core.h"
 
 
 
@@ -18,6 +16,8 @@ int main(void)
 
 void setup(void)
 {
+	HAL_Init();
+
 	printf("Hello World!\n");
 }
 
