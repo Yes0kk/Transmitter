@@ -2,6 +2,8 @@
 #include "clock/rcc.h"
 #include "config.h"
 #include "core.h"
+#include <stdatomic.h>
+#include <time.h>
 
 
 
@@ -243,7 +245,6 @@ uint32_t CLOCK_get_PLL_freq(void)
 	return source ? ((CONFIG_HSE_FREQ / HSEDIV) * mul) : ((SETTING_HSI_FREQ / 2) * mul); 
 }
 
-// TODO: Fix this function. It is not a pure getter
 // Returns the speed of SYSCLK. If it returns 0, error has occured.
 uint32_t CLOCK_get_SYSCLK_freq(void)
 {
@@ -253,40 +254,32 @@ uint32_t CLOCK_get_SYSCLK_freq(void)
 		3 -> NOT ALLOWED,
 		4.. -> ERROR
 	*/
-	uint8_t source = (RCC->CFGR & RCC_CFGR_SWS_Msk) >> RCC_CFGR_SWS_Pos;
+	CLOCK_SYSCLK_SOURCE source = CLOCK_getsysclk_source();
 
 	switch(source)
 	{
 		// PLL is used for SYSCLK
-		case 2:
-		{
-			// Confirm PLL works, then confirm its frequency
-			uint32_t freq = CLOCK_get_PLL_freq();
-			if (freq > SETTING_DEVICE_MAX_SYSCLK_FREQ)
-				return 0; // Something went wrong.
-			return freq;
-		}
+		case CLOCK_SYSCLK_PLL:
+			return CLOCK_get_PLL_freq();;
 		// HSE is used for SYSCLK
-		case 1:
-		{
-			if (CONFIG_HSE_FREQ > SETTING_DEVICE_MAX_SYSCLK_FREQ)
-				return 0;
+		case CLOCK_SYSCLK_HSE:
 			return CONFIG_HSE_FREQ;
-		}
 		// HSI is used for SYSCLK
-		case 0:
-		{
-			// Confirm HSI works, then confirm its frequency 
-			if (SETTING_HSI_FREQ > SETTING_DEVICE_MAX_SYSCLK_FREQ)
-				return 0;
+		case CLOCK_SYSCLK_HSI:
 			return SETTING_HSI_FREQ;
-		}
 		// Not Applicable
 		case 3:
 			return 0; // Something bad happened
 		default:
 			return 0; // Something even worse happend
 	}
+}
+
+// TODO: Implement casting for CLOCK_SYSCLK_SOURCE
+// Returns the current clock of SYSCLK
+CLOCK_SYSCLK_SOURCE CLOCK_get_SYSCLK(void)
+{
+	return (CLOCK_SYSCLK_SOURCE)((RCC->CFGR & RCC_CFGR_SWS_Msk) >> RCC_CFGR_SWS_Pos);
 }
 
 //TODO: Finish this function
@@ -302,7 +295,7 @@ HAL_status CLOCK_set_PLL_MULTIPLIER(uint8_t mult)
 	if (sys)
 	{
 		// Disable PLL, fallback to HSI
-
+		
 	}
 	else
 	{
@@ -364,6 +357,12 @@ HAL_status CLOCK_set_SYSCLK(CLOCK_SYSCLK_SOURCE clock)
 	RCC->CFGR |= (selected << RCC_CFGR_SW_Pos);
 
 	return CLOCK_confirm_SYSCLK();
+}
+
+// Set PLL to on/off
+HAL_status CLOCK_set_PLL(bool status)
+{
+
 }
 
 // TODO: Rework the functions below
